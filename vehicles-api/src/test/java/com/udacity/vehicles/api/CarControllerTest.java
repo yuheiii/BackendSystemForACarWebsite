@@ -4,9 +4,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,6 +31,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 /**
  * Implements testing of the CarController class.
@@ -91,12 +90,19 @@ public class CarControllerTest {
      */
     @Test
     public void listCars() throws Exception {
-        /**
-         * TODO: Add a test to check that the `get` method works by calling
-         *   the whole list of vehicles. This should utilize the car from `getCar()`
-         *   below (the vehicle will be the first in the list).
-         */
 
+        Car carList = this.getCar();
+        carList.setId(1L);
+        this.mvc.perform(
+                get(new URI("/cars"))
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "content[0].id").value(carList.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "content[0].price").value(carList.getPrice()))
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "content[0].condition").value(carList.getCondition().name()));
     }
 
     /**
@@ -105,10 +111,18 @@ public class CarControllerTest {
      */
     @Test
     public void findCar() throws Exception {
-        /**
-         * TODO: Add a test to check that the `get` method works by calling
-         *   a vehicle by ID. This should utilize the car from `getCar()` below.
-         */
+        Car carList = this.getCar();
+        carList.setId(1L);
+
+        this.mvc.perform(
+                get(new URI("/cars/1"))
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "price").value(carList.getPrice()))
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "condition").value(carList.getCondition().name()));
+
     }
 
     /**
@@ -117,11 +131,37 @@ public class CarControllerTest {
      */
     @Test
     public void deleteCar() throws Exception {
-        /**
-         * TODO: Add a test to check whether a vehicle is appropriately deleted
-         *   when the `delete` method is called from the Car Controller. This
-         *   should utilize the car from `getCar()` below.
-         */
+        Car carList = this.getCar();
+
+        carList.setId(1L);
+
+        this.mvc.perform(
+                delete(new URI("/cars/1"))
+        ).andExpect(status().is(204));
+    }
+    /**
+     * Tests if the read operation appropriately returns a list of vehicles.
+     * @throws Exception if the read operation of the vehicle list fails
+     */
+    @Test
+    public void updateCar() throws Exception {
+        Car carList = this.getCar();
+        carList.setId(1L);
+
+        mvc.perform(
+                put(new URI("/cars/1"))
+                        .content(json.write(carList).getJson())
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;" +
+                        "charset=UTF-8"))
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "id").value(carList.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "price").value(carList.getPrice()))
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "condition").value(carList.getCondition().name()));
     }
 
     /**
