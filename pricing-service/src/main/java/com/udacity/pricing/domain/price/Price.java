@@ -1,7 +1,8 @@
 package com.udacity.pricing.domain.price;
 
-import java.math.BigDecimal;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
+import java.math.BigDecimal;
 /**
  * Represents the price of a given vehicle, including currency.
  */

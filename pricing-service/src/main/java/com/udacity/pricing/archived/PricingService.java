@@ -1,5 +1,6 @@
-package com.udacity.pricing.service;
+package com.udacity.pricing.archived;
 
+import com.udacity.pricing.archived.PriceException;
 import com.udacity.pricing.domain.price.Price;
 
 import java.math.BigDecimal;
