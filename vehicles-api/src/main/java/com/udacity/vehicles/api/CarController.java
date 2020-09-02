@@ -60,7 +60,7 @@ class CarController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     Resource<Car> get(@PathVariable Long id) {
         Car car = this.carService.findById(id);
-        return assembler.toResource(new Car());
+        return assembler.toResource(car);
     }
 
     /**
